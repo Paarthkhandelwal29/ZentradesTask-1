@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Table</title>
+    <style>
+      body{
+        background-color: #141414;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background-color: #222222;
+        color: white;
+      }
+
+      th,
+      td {
+        border: 1px solid #b3f39e;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #222222;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <table id="productTable">
+      <thead>
+        <tr>
+          <th><h3>Title</h3></th>
+          <th><h3>Price</h3></th>
+          <th><h3>Popularity</h3></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Table body will be populated dynamically with JavaScript -->
+      </tbody>
+    </table>
+
+    <script>
+      // Function to fetch and parse JSON data
+      async function fetchData() {
+        try {
+          const response = await fetch(
+            'https://s3.amazonaws.com/open-to-cors/assignment.json'
+          )
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error('Error fetching data:', error)
+        }
+      }
+
+      // Function to display data in a table sorted by descending popularity
+      function displaySortedData(data) {
+        const objData = data.products
+        // data is in object format, so we need to convert it to array
+        const sortedData = Object.values(objData).sort(
+          (a, b) => b.popularity - a.popularity
+        )
+        console.log(sortedData)
+
+        const tableBody = document.querySelector('#productTable tbody')
+        const rows = []
+
+        sortedData.forEach(product => {
+          const row = document.createElement('tr')
+          const titleCell = document.createElement('td')
+          const priceCell = document.createElement('td')
+          const popularityCell = document.createElement('td')
+
+          titleCell.textContent = product.title
+          priceCell.textContent = product.price
+          popularityCell.textContent = product.popularity
+
+          row.appendChild(titleCell)
+          row.appendChild(priceCell)
+          row.appendChild(popularityCell)
+
+          rows.push(row)
+        })
+
+        tableBody.append(...rows)
+      }
+
+      // Main function to execute the application
+      async function main() {
+        const jsonData = await fetchData()
+
+        if (jsonData) {
+          displaySortedData(jsonData)
+        }
+      }
+
+      // Run the application
+      main()
+    </script>
+  </body>
+</html>
